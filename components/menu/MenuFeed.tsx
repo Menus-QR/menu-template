@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { FlatList, StyleSheet, ActivityIndicator, View, Dimensions } from 'react-native';
 import { MenuItem } from '@/components/menu/MenuItem';
 import { fetchMenuItems } from '@/services/menuService';
@@ -6,12 +6,21 @@ import { MenuFeedState } from '@/types/menu';
 
 const { height } = Dimensions.get('window');
 
+interface ScrollEvent {
+  nativeEvent: {
+    contentOffset: {
+      y: number;
+    };
+  };
+}
+
 export function MenuFeed() {
   const [state, setState] = useState<MenuFeedState>({
     items: [],
     isLoading: true,
     error: null,
   });
+  const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
     loadMenuItems();
@@ -34,31 +43,58 @@ export function MenuFeed() {
     }
   };
 
+  const onScrollEnd = (event: ScrollEvent) => {
+    const offset = event.nativeEvent.contentOffset.y;
+    const index = Math.round(offset / height);
+
+    flatListRef.current?.scrollToOffset({
+      offset: index * height,
+      animated: true,
+    });
+  };
+
   if (state.isLoading) {
     return (
-      <View style={styles.centered}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" />
       </View>
     );
   }
 
   return (
-    <FlatList
-      data={state.items}
-      renderItem={({ item }) => <MenuItem item={item} />}
-      keyExtractor={item => item.id}
-      snapToInterval={height}
-      snapToAlignment="start"
-      decelerationRate="fast"
-      showsVerticalScrollIndicator={false}
-    />
+    <View style={styles.container}>
+      <FlatList
+        ref={flatListRef}
+        data={state.items}
+        renderItem={({ item }) => <MenuItem item={item} />}
+        keyExtractor={item => item.id}
+        snapToInterval={height}
+        snapToAlignment="start"
+        decelerationRate={0.95}
+        showsVerticalScrollIndicator={false}
+        onMomentumScrollEnd={onScrollEnd}
+        pagingEnabled={true}
+        style={styles.flatList}
+        contentContainerStyle={styles.contentContainer}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  centered: {
+  container: {
+    flex: 1,
+    height: '100vh',
+  },
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  flatList: {
+    flex: 1,
+  },
+  contentContainer: {
+    minHeight: '100%',
   },
 });
