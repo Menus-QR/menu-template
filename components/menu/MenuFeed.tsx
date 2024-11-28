@@ -85,11 +85,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     height: height,
+    backgroundColor: '#000000',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#000000',
   },
   flatList: {
     flex: 1,
