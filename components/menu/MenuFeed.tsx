@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { FlatList, StyleSheet, ActivityIndicator, View, Dimensions } from 'react-native';
+import { FlatList, StyleSheet, ActivityIndicator, View, Dimensions, ViewStyle } from 'react-native';
 import { MenuItem } from '@/components/menu/MenuItem';
 import { fetchMenuItems } from '@/services/menuService';
 import { MenuFeedState } from '@/types/menu';
@@ -55,14 +55,14 @@ export function MenuFeed() {
 
   if (state.isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={styles.loadingContainer as ViewStyle}>
         <ActivityIndicator size="large" />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container as ViewStyle}>
       <FlatList
         ref={flatListRef}
         data={state.items}
@@ -74,8 +74,8 @@ export function MenuFeed() {
         showsVerticalScrollIndicator={false}
         onMomentumScrollEnd={onScrollEnd}
         pagingEnabled={true}
-        style={styles.flatList}
-        contentContainerStyle={styles.contentContainer}
+        style={styles.flatList as ViewStyle}
+        contentContainerStyle={styles.contentContainer as ViewStyle}
       />
     </View>
   );
@@ -84,7 +84,7 @@ export function MenuFeed() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: '100vh',
+    height: height,
   },
   loadingContainer: {
     flex: 1,
@@ -95,6 +95,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    minHeight: '100%',
+    minHeight: height,
   },
 });
