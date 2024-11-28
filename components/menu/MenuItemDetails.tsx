@@ -23,7 +23,7 @@ export function MenuItemDetails({ item }: MenuItemDetailsProps) {
         },
       ]}
     >
-      <Text style={styles.title}>{item.title}</Text>
+      <Text style={styles.title}>{item.name}</Text>
       <Text style={styles.description}>{item.description}</Text>
       <Text style={styles.price}>${item.price.toFixed(2)}</Text>
     </View>

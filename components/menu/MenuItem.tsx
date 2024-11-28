@@ -16,7 +16,7 @@ export function MenuItem({ item }: MenuItemProps) {
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: item.imageUrl }}
+        source={{ uri: item.url }}
         style={styles.image}
         resizeMode="cover"
         onLoadStart={() => setIsLoading(true)}
