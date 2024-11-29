@@ -1,32 +1,53 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, Platform, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MenuItem } from '@/types/menu';
+import { DESCRIPTION_CHARACTER_LIMIT, TAB_BAR_HEIGHT } from '@/constants/layout';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface MenuItemDetailsProps {
   item: MenuItem;
 }
 
+function shouldTruncate(text: string): boolean {
+  return text.length > DESCRIPTION_CHARACTER_LIMIT;
+}
+
+function truncateText(text: string): string {
+  return text.slice(0, DESCRIPTION_CHARACTER_LIMIT).trim() + '...';
+}
+
 export function MenuItemDetails({ item }: MenuItemDetailsProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const insets = useSafeAreaInsets();
 
-  // Add extra padding for the tab bar (typical tab bar height is 49)
-  const TAB_BAR_HEIGHT = 49;
+  const needsTruncation = shouldTruncate(item.description ?? '');
+  const displayText =
+    needsTruncation && !isExpanded ? truncateText(item.description ?? '') : item.description ?? '';
 
   return (
-    <View
+    <LinearGradient
+      colors={['transparent', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,0.9)']}
       style={[
         styles.overlay,
         {
-          // Add tab bar height to the bottom padding
           paddingBottom: Math.max(insets.bottom + TAB_BAR_HEIGHT + 20, TAB_BAR_HEIGHT + 20),
         },
       ]}
     >
       <Text style={styles.title}>{item.name}</Text>
-      <Text style={styles.description}>{item.description}</Text>
+      <View>
+        <Text style={styles.description}>
+          {displayText}
+          {needsTruncation && (
+            <Pressable onPress={() => setIsExpanded(!isExpanded)} style={styles.toggleButton}>
+              <Text style={styles.toggleText}>{isExpanded ? 'Show less' : 'More'}</Text>
+            </Pressable>
+          )}
+        </Text>
+      </View>
       <Text style={styles.price}>${item.price.toFixed(2)}</Text>
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -37,18 +58,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 20,
-    // Enhanced gradient effect
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -3 },
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
-      },
-      android: {
-        elevation: 5,
-      },
-    }),
+    paddingTop: 20,
   },
   title: {
     color: 'white',
@@ -65,5 +75,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  toggleButton: {
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  toggleText: {
+    color: '#4A90E2',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
   },
 });
