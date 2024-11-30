@@ -11,3 +11,14 @@ export interface MenuFeedState {
   isLoading: boolean;
   error: string | null;
 }
+
+export type MediaType = 'image' | 'video';
+
+export interface MediaContentProps {
+  url: string;
+  isVisible?: boolean;
+  preload?: boolean;
+  onLoadStart?: () => void;
+  onLoadEnd?: () => void;
+  onError?: () => void;
+}

@@ -1,10 +1,23 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { FlatList, StyleSheet, ActivityIndicator, View, Dimensions, ViewStyle } from 'react-native';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import {
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+  View,
+  Dimensions,
+  ViewStyle,
+  Text,
+} from 'react-native';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { MenuItem } from '@/components/menu/MenuItem';
-import { fetchMenuItems } from '@/services/menuService';
-import { MenuFeedState } from '@/types/menu';
+import { fetchMenuItems, prefetchVideo } from '@/services/menuService';
+import { MenuItem as MenuItemType } from '@/types/menu';
 
 const { height } = Dimensions.get('window');
+const VIEWABILITY_CONFIG = {
+  itemVisiblePercentThreshold: 80,
+  minimumViewTime: 300,
+};
 
 interface ScrollEvent {
   nativeEvent: {
@@ -14,34 +27,71 @@ interface ScrollEvent {
   };
 }
 
+interface ViewableItem {
+  item: MenuItemType;
+  index: number | null;
+  isViewable: boolean;
+  key: string;
+}
+
+interface ViewableItemsChanged {
+  viewableItems: ViewableItem[];
+  changed: ViewableItem[];
+}
+
 export function MenuFeed() {
-  const [state, setState] = useState<MenuFeedState>({
-    items: [],
-    isLoading: true,
-    error: null,
-  });
+  const [visibleIndex, setVisibleIndex] = useState<number>(0);
   const flatListRef = useRef<FlatList>(null);
+  const queryClient = useQueryClient();
+
+  const {
+    data: items = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['menuItems'],
+    queryFn: fetchMenuItems,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    onError: error => {
+      console.error('Query error:', error);
+    },
+  });
 
   useEffect(() => {
-    loadMenuItems();
-  }, []);
+    console.log('MenuFeed state:', {
+      itemsCount: items.length,
+      isLoading,
+      error,
+    });
+  }, [items, isLoading, error]);
 
-  const loadMenuItems = async () => {
-    try {
-      const items = await fetchMenuItems();
-      setState({
-        items,
-        isLoading: false,
-        error: null,
+  const prefetchNextItems = useCallback(
+    async (currentIndex: number) => {
+      const nextItems = items.slice(currentIndex + 1, currentIndex + 6);
+      const videoItems = nextItems.filter(item => item.url.match(/\.(mp4|webm|mov)$/i));
+
+      queryClient.prefetchQuery({
+        queryKey: ['menuItems', currentIndex + 1],
+        queryFn: () => fetchMenuItems(),
       });
-    } catch (error) {
-      setState(prevState => ({
-        ...prevState,
-        isLoading: false,
-        error: 'Failed to load menu items',
-      }));
-    }
-  };
+
+      for (const item of videoItems) {
+        await prefetchVideo(item.url);
+      }
+    },
+    [items, queryClient]
+  );
+
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewableItem[] }) => {
+      if (viewableItems.length > 0 && viewableItems[0].index !== null) {
+        const newIndex = viewableItems[0].index;
+        setVisibleIndex(newIndex);
+        prefetchNextItems(newIndex);
+      }
+    },
+    [prefetchNextItems]
+  );
 
   const onScrollEnd = (event: ScrollEvent) => {
     const offset = event.nativeEvent.contentOffset.y;
@@ -53,10 +103,27 @@ export function MenuFeed() {
     });
   };
 
-  if (state.isLoading) {
+  const viewabilityConfigCallbackPairs = useRef([
+    {
+      viewabilityConfig: VIEWABILITY_CONFIG,
+      onViewableItemsChanged: onViewableItemsChanged,
+    },
+  ]);
+
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer as ViewStyle}>
         <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  console.log(error);
+
+  if (error) {
+    return (
+      <View style={styles.loadingContainer as ViewStyle}>
+        <Text style={styles.errorText}>Failed to load menu items</Text>
       </View>
     );
   }
@@ -65,17 +132,28 @@ export function MenuFeed() {
     <View style={styles.container as ViewStyle}>
       <FlatList
         ref={flatListRef}
-        data={state.items}
-        renderItem={({ item }) => <MenuItem item={item} />}
+        data={items}
+        renderItem={({ item, index }) => (
+          <MenuItem
+            item={item}
+            isVisible={index === visibleIndex}
+            preload={Math.abs(index - visibleIndex) <= 1}
+          />
+        )}
         keyExtractor={item => item.id}
         snapToInterval={height}
         snapToAlignment="start"
         decelerationRate={0.95}
         showsVerticalScrollIndicator={false}
         onMomentumScrollEnd={onScrollEnd}
+        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
         pagingEnabled={true}
         style={styles.flatList as ViewStyle}
         contentContainerStyle={styles.contentContainer as ViewStyle}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+        initialNumToRender={2}
       />
     </View>
   );
@@ -98,5 +176,9 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     minHeight: height,
+  },
+  errorText: {
+    color: '#ffffff',
+    fontSize: 16,
   },
 });

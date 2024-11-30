@@ -40,6 +40,7 @@ export function MenuItemDetails({ item }: MenuItemDetailsProps) {
       ]}
     >
       <Text style={[styles.title, { color: colors.menuTitle }]}>{item.name}</Text>
+      <Text style={[styles.price, { color: colors.menuPrice }]}>${item.price.toFixed(2)}</Text>
       <View>
         <Text style={[styles.description, { color: colors.menuText }]}>
           {displayText}
@@ -52,7 +53,6 @@ export function MenuItemDetails({ item }: MenuItemDetailsProps) {
           )}
         </Text>
       </View>
-      <Text style={[styles.price, { color: colors.menuPrice }]}>${item.price.toFixed(2)}</Text>
     </LinearGradient>
   );
 }
@@ -71,13 +71,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
   },
+  price: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
   description: {
     fontSize: 16,
     marginBottom: 8,
-  },
-  price: {
-    fontSize: 20,
-    fontWeight: 'bold',
   },
   toggleButton: {
     marginTop: 4,
