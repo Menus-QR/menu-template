@@ -4,6 +4,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MenuItem } from '@/types/menu';
 import { DESCRIPTION_CHARACTER_LIMIT, TAB_BAR_HEIGHT } from '@/constants/layout';
 import { LinearGradient } from 'expo-linear-gradient';
+import Colors from '@/constants/Colors';
+import { useColorScheme } from 'react-native';
 
 interface MenuItemDetailsProps {
   item: MenuItem;
@@ -20,6 +22,8 @@ function truncateText(text: string): string {
 export function MenuItemDetails({ item }: MenuItemDetailsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const insets = useSafeAreaInsets();
+  const colorScheme = useColorScheme() ?? 'light';
+  const colors = Colors[colorScheme];
 
   const needsTruncation = shouldTruncate(item.description ?? '');
   const displayText =
@@ -27,7 +31,7 @@ export function MenuItemDetails({ item }: MenuItemDetailsProps) {
 
   return (
     <LinearGradient
-      colors={['transparent', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,0.9)']}
+      colors={[Colors.common.transparent, Colors.common.overlay.light, Colors.common.overlay.dark]}
       style={[
         styles.overlay,
         {
@@ -35,18 +39,20 @@ export function MenuItemDetails({ item }: MenuItemDetailsProps) {
         },
       ]}
     >
-      <Text style={styles.title}>{item.name}</Text>
+      <Text style={[styles.title, { color: colors.menuTitle }]}>{item.name}</Text>
       <View>
-        <Text style={styles.description}>
+        <Text style={[styles.description, { color: colors.menuText }]}>
           {displayText}
           {needsTruncation && (
             <Pressable onPress={() => setIsExpanded(!isExpanded)} style={styles.toggleButton}>
-              <Text style={styles.toggleText}>{isExpanded ? 'Show less' : 'More'}</Text>
+              <Text style={[styles.toggleText, { color: colors.menuLink }]}>
+                {isExpanded ? 'Show less' : 'More'}
+              </Text>
             </Pressable>
           )}
         </Text>
       </View>
-      <Text style={styles.price}>${item.price.toFixed(2)}</Text>
+      <Text style={[styles.price, { color: colors.menuPrice }]}>${item.price.toFixed(2)}</Text>
     </LinearGradient>
   );
 }
@@ -61,18 +67,15 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   title: {
-    color: 'white',
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 8,
   },
   description: {
-    color: 'white',
     fontSize: 16,
     marginBottom: 8,
   },
   price: {
-    color: 'white',
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -81,7 +84,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   toggleText: {
-    color: '#4A90E2',
     fontSize: 14,
     fontWeight: '600',
     marginLeft: 8,
