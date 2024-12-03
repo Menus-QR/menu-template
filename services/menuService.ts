@@ -37,13 +37,9 @@ export async function fetchMenuItems(): Promise<MenuItem[]> {
     throw new Error(`Failed to fetch menu items: ${error.message}`);
   }
 
-  console.log('Raw menu items:', data);
-
   // Sign URLs for video items
   const itemsWithSignedUrls = await Promise.all(
     (data || []).map(async (item, index) => {
-      console.log(`Processing item ${index}:`, { id: item.id, url: item.url });
-
       if (item.url.match(/\.(mp4|webm|mov)$/i)) {
         try {
           console.log('Getting signed URL for video:', item.url);
@@ -58,8 +54,6 @@ export async function fetchMenuItems(): Promise<MenuItem[]> {
       return item;
     })
   );
-
-  console.log('Processed items count:', itemsWithSignedUrls.length);
   return itemsWithSignedUrls;
 }
 
