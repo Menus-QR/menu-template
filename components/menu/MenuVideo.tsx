@@ -11,6 +11,7 @@ interface MenuVideoProps {
 export function MenuVideo({ url, isVisible, hasUserInteracted = false }: MenuVideoProps) {
   const video = useRef<Video | null>(null);
   const [status, setStatus] = useState<any>(null);
+  const wasVisible = useRef(isVisible);
 
   // Handle video playback based on visibility and user interaction
   useEffect(() => {
@@ -19,13 +20,18 @@ export function MenuVideo({ url, isVisible, hasUserInteracted = false }: MenuVid
       if (!player) return;
 
       try {
+        // Video becomes visible
         if (isVisible && hasUserInteracted) {
           await player.setIsMutedAsync(true);
           await player.playAsync();
-        } else {
-          await player.pauseAsync();
-          await player.setPositionAsync(0);
         }
+        // Video becomes hidden
+        else if (wasVisible.current && !isVisible) {
+          await player.pauseAsync();
+          await player.setPositionAsync(0); // Reset to start
+        }
+
+        wasVisible.current = isVisible;
       } catch (error) {
         console.warn('Playback error:', error);
       }
@@ -33,6 +39,17 @@ export function MenuVideo({ url, isVisible, hasUserInteracted = false }: MenuVid
 
     handlePlayback();
   }, [isVisible, hasUserInteracted]);
+
+  // Cleanup effect to pause and reset video when component unmounts
+  useEffect(() => {
+    return () => {
+      const player = video.current;
+      if (player) {
+        player.pauseAsync();
+        player.setPositionAsync(0);
+      }
+    };
+  }, []);
 
   return (
     <Pressable
