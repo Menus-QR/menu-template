@@ -52,19 +52,23 @@ export function MenuVideo({ url, isVisible, hasUserInteracted = false }: MenuVid
           ref={video}
           source={{ uri: url }}
           style={styles.video}
-          isLooping
-          resizeMode={ResizeMode.CONTAIN}
+          isLooping={true}
           useNativeControls={false}
+          resizeMode={ResizeMode.CONTAIN}
           isMuted={true}
-          shouldPlay={false}
+          shouldPlay={true}
           onPlaybackStatusUpdate={status => setStatus(() => status)}
-          {...Platform.select({
-            web: {
-              playsInline: true,
-              'webkit-playsinline': true,
-            },
-            default: {},
-          })}
+          onLoad={() => {
+            console.log('loaded');
+            const player = video.current;
+            if (!player) return;
+
+            if (status?.isPlaying) {
+              player.pauseAsync();
+            } else {
+              player.playAsync();
+            }
+          }}
         />
       </View>
     </Pressable>
@@ -74,10 +78,14 @@ export function MenuVideo({ url, isVisible, hasUserInteracted = false }: MenuVid
 const styles = StyleSheet.create({
   videoContainer: {
     width: Dimensions.get('window').width,
+    aspectRatio: 16 / 9,
     height: Dimensions.get('window').height,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
   },
   video: {
-    width: '100%',
-    height: '100%',
+    flex: 1,
+    alignSelf: 'stretch',
   },
 });
