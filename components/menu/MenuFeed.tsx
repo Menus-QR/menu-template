@@ -90,6 +90,7 @@ export function MenuFeed() {
             item={item}
             isVisible={index === visibleIndex}
             hasUserInteracted={hasUserInteracted}
+            allItems={items}
           />
         )}
         pagingEnabled
