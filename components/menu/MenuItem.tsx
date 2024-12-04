@@ -1,36 +1,31 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, Dimensions, Platform } from 'react-native';
 import { MenuItem as MenuItemType } from '@/types/menu';
 import { MenuItemDetails } from './MenuItemDetails';
-import { MediaContent } from './MediaContent';
+import { MenuVideo } from './MenuVideo';
 
 interface MenuItemProps {
   item: MenuItemType;
   isVisible: boolean;
-  preload: boolean;
+  hasUserInteracted: boolean;
 }
 
-const { height, width } = Dimensions.get('window');
+const windowDimensions = Dimensions.get('window');
+const screenDimensions = Dimensions.get('screen');
 
-export function MenuItem({ item, isVisible, preload }: MenuItemProps) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
+const height = Platform.select({
+  web: windowDimensions.height,
+  default: screenDimensions.height,
+});
+const width = Platform.select({
+  web: windowDimensions.width,
+  default: screenDimensions.width,
+});
 
-  console.log('url', item.url);
-
+export function MenuItem({ item, isVisible, hasUserInteracted }: MenuItemProps) {
   return (
     <View style={styles.container}>
-      <MediaContent
-        url={item.url}
-        isVisible={isVisible}
-        preload={preload}
-        onLoadStart={() => setIsLoading(true)}
-        onLoadEnd={() => setIsLoading(false)}
-        onError={() => {
-          setIsLoading(false);
-          setHasError(true);
-        }}
-      />
+      <MenuVideo url={item.url} isVisible={isVisible} hasUserInteracted={hasUserInteracted} />
       <View style={styles.detailsContainer}>
         <MenuItemDetails item={item} />
       </View>
@@ -40,8 +35,8 @@ export function MenuItem({ item, isVisible, preload }: MenuItemProps) {
 
 const styles = StyleSheet.create({
   container: {
-    height: height,
-    width: width,
+    height,
+    width,
     backgroundColor: '#000',
   },
   detailsContainer: {

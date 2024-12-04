@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { fetchMenuItems } from '@/services/menuService';
-import { MenuVideo } from './MenuVideo';
+import { MenuItem } from './MenuItem';
 
 // Get screen dimensions and adjust for mobile
 const windowDimensions = Dimensions.get('window');
@@ -47,21 +47,21 @@ export function MenuFeed() {
     queryFn: fetchMenuItems,
   });
 
-  const onViewableItemsChanged = useCallback(({ changed }: ViewableItemsChanged) => {
-    const firstVisible = changed.find(item => item.isViewable);
-    if (firstVisible) {
-      console.log('visible item:', firstVisible);
-      setVisibleIndex(firstVisible.index ?? 0);
-    }
-  }, []);
-
-  const viewabilityConfig = React.useMemo(
-    () => ({
-      itemVisiblePercentThreshold: 50,
-      minimumViewTime: 300,
-    }),
-    []
-  );
+  const viewabilityConfigCallbackPairs = React.useRef([
+    {
+      viewabilityConfig: {
+        itemVisiblePercentThreshold: 50,
+        minimumViewTime: 300,
+      },
+      onViewableItemsChanged: ({ changed }: ViewableItemsChanged) => {
+        const firstVisible = changed.find(item => item.isViewable);
+        if (firstVisible) {
+          console.log('visible item:', firstVisible);
+          setVisibleIndex(firstVisible.index ?? 0);
+        }
+      },
+    },
+  ]);
 
   if (isLoading) {
     return (
@@ -86,20 +86,17 @@ export function MenuFeed() {
         data={items}
         keyExtractor={item => item.id}
         renderItem={({ item, index }) => (
-          <View style={[styles.videoContainer, { height, width }]}>
-            <MenuVideo
-              url={item.url}
-              isVisible={index === visibleIndex}
-              hasUserInteracted={hasUserInteracted}
-            />
-          </View>
+          <MenuItem
+            item={item}
+            isVisible={index === visibleIndex}
+            hasUserInteracted={hasUserInteracted}
+          />
         )}
         pagingEnabled
         snapToInterval={height}
         snapToAlignment="start"
         decelerationRate={Platform.select({ ios: 'fast', default: 'fast' })}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={viewabilityConfig}
+        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
         windowSize={2}
         maxToRenderPerBatch={1}
         removeClippedSubviews={true}
