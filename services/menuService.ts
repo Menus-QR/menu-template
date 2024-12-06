@@ -54,7 +54,7 @@ export async function fetchMenuItems(): Promise<MenuItem[]> {
       return item;
     })
   );
-  return itemsWithSignedUrls;
+  return [...itemsWithSignedUrls, ...itemsWithSignedUrls]; // TODO: Remove this
 }
 
 export async function prefetchVideo(url: string): Promise<void> {

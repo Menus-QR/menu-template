@@ -16,6 +16,8 @@ const palette = {
   // Main theme colors
   theme: {
     primary: '#A15A1C', // Main brand color
+    primaryLight: '#aa6b33',
+    primaryDark: '#915119',
     secondary: '#2f95dc', // Current blue color
     accent: '#4A90E2', // Accent color for highlights and CTAs
   },
@@ -24,6 +26,8 @@ const palette = {
 // Semantic colors - how colors are used in the app
 const semantic = {
   primary: palette.theme.primary,
+  primaryLight: 'hsla(28,97%,58%,0.64)',
+  primaryDark: '#633400',
   secondary: palette.theme.secondary,
   accent: palette.theme.accent,
   text: {
