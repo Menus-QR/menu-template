@@ -22,15 +22,13 @@ export function MenuCard({ item }: MenuCardProps) {
         />
         <View style={styles.contentContainer}>
           <View style={styles.headerContainer}>
-            <Text style={[styles.name, { color: colors.menuText }]}>
-              {item.name || 'Unnamed Item'}
-            </Text>
+            <Text style={[styles.name, { color: colors.menuText }]}>{item.name}</Text>
             <Text style={[styles.price, { color: colors.menuText }]}>
-              ${item.price?.toFixed(2) || '0.00'}
+              ${item.price?.toFixed(2)}
             </Text>
           </View>
           <Text style={[styles.description, { color: colors.menuText }]} numberOfLines={2}>
-            {item.description || 'No description available'}
+            {item.description}
           </Text>
         </View>
       </View>
@@ -66,9 +64,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: 4,
     marginBottom: 8,
   },
   name: {
@@ -83,6 +82,5 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    lineHeight: 20,
   },
 });
