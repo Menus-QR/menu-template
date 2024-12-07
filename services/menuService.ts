@@ -1,4 +1,4 @@
-import { MenuItem } from '@/types/menu';
+import { MenuItem, Category, CategoryGroup } from '@/types/menu';
 import { supabase } from '@/lib/supabase';
 
 const VIDEO_EXPIRY = 60 * 60; // 1 hour in seconds
@@ -24,18 +24,26 @@ async function getSignedUrl(path: string): Promise<string> {
   return data.signedUrl;
 }
 
-interface CategoryGroup {
-  category: string;
-  items: MenuItem[];
+async function fetchCategories(): Promise<Category[]> {
+  console.log('Fetching categories...');
+
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*')
+    .order('display_order', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching categories:', error);
+    throw new Error(`Failed to fetch categories: ${error.message}`);
+  }
+
+  return data || [];
 }
 
 export async function fetchMenuItems(): Promise<MenuItem[]> {
   console.log('Fetching menu items...');
 
-  const { data, error } = await supabase
-    .from('platillos')
-    .select('*')
-    .order('id', { ascending: true });
+  const { data, error } = await supabase.from('platillos').select('*');
 
   if (error) {
     console.error('Error fetching menu items:', error);
@@ -65,26 +73,19 @@ export async function fetchMenuItems(): Promise<MenuItem[]> {
 export async function fetchCategorizedMenuItems(): Promise<CategoryGroup[]> {
   console.log('Fetching categorized menu items...');
 
-  const items = await fetchMenuItems();
+  // Fetch categories and items in parallel
+  const [categories, items] = await Promise.all([fetchCategories(), fetchMenuItems()]);
 
+  console.log('Categories:', categories);
   console.log('Items:', items);
 
   // Group items by category
-  const groupedItems = items.reduce((acc: CategoryGroup[], item) => {
-    const category = item.category || 'Uncategorized';
-    const existingGroup = acc.find(group => group.category === category);
+  const groupedItems = categories.map(category => ({
+    category,
+    items: items.filter(item => item.category_id === category.id),
+  }));
 
-    if (existingGroup) {
-      existingGroup.items.push(item);
-    } else {
-      acc.push({ category, items: [item] });
-    }
-
-    return acc;
-  }, []);
-
-  // Sort categories alphabetically
-  return groupedItems.sort((a, b) => a.category.localeCompare(b.category));
+  return groupedItems;
 }
 
 export async function prefetchVideo(url: string): Promise<void> {

@@ -11,15 +11,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
-import { MenuItem } from '@/types/menu';
+import { MenuItem, Category, CategoryGroup } from '@/types/menu';
 import Colors from '@/constants/Colors';
 import { MenuCard } from './MenuCard';
 import { fetchCategorizedMenuItems } from '@/services/menuService';
-
-interface CategoryGroup {
-  category: string;
-  items: MenuItem[];
-}
 
 export function FullMenu() {
   const colorScheme = useColorScheme();
@@ -31,8 +26,10 @@ export function FullMenu() {
     queryFn: fetchCategorizedMenuItems,
   });
 
-  function renderCategoryHeader({ category }: { category: string }) {
-    return <Text style={[styles.categoryHeader, { color: colors.menuText }]}>{category}</Text>;
+  function renderCategoryHeader({ category }: { category: Category }) {
+    return (
+      <Text style={[styles.categoryHeader, { color: colors.menuText }]}>{category.category}</Text>
+    );
   }
 
   function renderMenuItem({ item }: { item: MenuItem }) {
@@ -109,7 +106,7 @@ export function FullMenu() {
               <FlatList
                 data={categorizedItems}
                 renderItem={({ item }) => renderCategory(item)}
-                keyExtractor={item => item.category}
+                keyExtractor={item => item.category.category}
                 showsVerticalScrollIndicator={false}
                 style={styles.list}
                 contentContainerStyle={styles.listContent}

@@ -1,10 +1,22 @@
+export interface Category {
+  id: number;
+  category: string;
+  display_order: number;
+  created_at: string;
+}
+
 export interface MenuItem {
   id: string;
   url: string;
   name: string;
   description: string | null;
-  category: string;
+  category_id: number;
   price: number;
+}
+
+export interface CategoryGroup {
+  category: Category;
+  items: MenuItem[];
 }
 
 export interface MenuFeedState {
@@ -23,5 +35,3 @@ export interface MediaContentProps {
   onLoadEnd?: () => void;
   onError?: () => void;
 }
-
-export type Category = 'Para Abrir el Apetito' | 'Barra de Tacos' | 'Platillos de la Casa';
