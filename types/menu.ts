@@ -3,6 +3,7 @@ export interface MenuItem {
   url: string;
   name: string;
   description: string | null;
+  category: string;
   price: number;
 }
 
@@ -22,3 +23,5 @@ export interface MediaContentProps {
   onLoadEnd?: () => void;
   onError?: () => void;
 }
+
+export type Category = 'Para Abrir el Apetito' | 'Barra de Tacos' | 'Platillos de la Casa';

@@ -24,6 +24,11 @@ async function getSignedUrl(path: string): Promise<string> {
   return data.signedUrl;
 }
 
+interface CategoryGroup {
+  category: string;
+  items: MenuItem[];
+}
+
 export async function fetchMenuItems(): Promise<MenuItem[]> {
   console.log('Fetching menu items...');
 
@@ -54,7 +59,32 @@ export async function fetchMenuItems(): Promise<MenuItem[]> {
       return item;
     })
   );
-  return [...itemsWithSignedUrls, ...itemsWithSignedUrls]; // TODO: Remove this
+  return itemsWithSignedUrls;
+}
+
+export async function fetchCategorizedMenuItems(): Promise<CategoryGroup[]> {
+  console.log('Fetching categorized menu items...');
+
+  const items = await fetchMenuItems();
+
+  console.log('Items:', items);
+
+  // Group items by category
+  const groupedItems = items.reduce((acc: CategoryGroup[], item) => {
+    const category = item.category || 'Uncategorized';
+    const existingGroup = acc.find(group => group.category === category);
+
+    if (existingGroup) {
+      existingGroup.items.push(item);
+    } else {
+      acc.push({ category, items: [item] });
+    }
+
+    return acc;
+  }, []);
+
+  // Sort categories alphabetically
+  return groupedItems.sort((a, b) => a.category.localeCompare(b.category));
 }
 
 export async function prefetchVideo(url: string): Promise<void> {

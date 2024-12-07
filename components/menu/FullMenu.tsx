@@ -10,19 +10,30 @@ import {
   useColorScheme,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
 import { MenuItem } from '@/types/menu';
 import Colors from '@/constants/Colors';
 import { MenuCard } from './MenuCard';
+import { fetchCategorizedMenuItems } from '@/services/menuService';
 
-interface FullMenuProps {
+interface CategoryGroup {
+  category: string;
   items: MenuItem[];
 }
 
-export function FullMenu({ items }: FullMenuProps) {
+export function FullMenu() {
   const colorScheme = useColorScheme();
   const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
-
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const { data: categorizedItems = [], isLoading } = useQuery({
+    queryKey: ['menuItems', 'categorized'],
+    queryFn: fetchCategorizedMenuItems,
+  });
+
+  function renderCategoryHeader({ category }: { category: string }) {
+    return <Text style={[styles.categoryHeader, { color: colors.menuText }]}>{category}</Text>;
+  }
 
   function renderMenuItem({ item }: { item: MenuItem }) {
     return (
@@ -32,7 +43,18 @@ export function FullMenu({ items }: FullMenuProps) {
     );
   }
 
-  if (!items || items.length === 0) {
+  function renderCategory({ category, items }: CategoryGroup) {
+    return (
+      <View style={styles.categorySection}>
+        {renderCategoryHeader({ category })}
+        {items.map(item => (
+          <View key={item.id}>{renderMenuItem({ item })}</View>
+        ))}
+      </View>
+    );
+  }
+
+  if (!categorizedItems || categorizedItems.length === 0) {
     return (
       <>
         <TouchableOpacity style={styles.hamburgerButton} onPress={() => setIsDrawerOpen(true)}>
@@ -53,7 +75,9 @@ export function FullMenu({ items }: FullMenuProps) {
               <Pressable style={styles.headerArea} onPress={() => setIsDrawerOpen(false)}>
                 <View style={[styles.handle, { backgroundColor: colors.navigationBorder }]} />
               </Pressable>
-              <Text style={styles.noItemsText}>No menu items available</Text>
+              <Text style={styles.noItemsText}>
+                {isLoading ? 'Loading menu items...' : 'No menu items available'}
+              </Text>
             </Pressable>
           </Pressable>
         </Modal>
@@ -83,18 +107,14 @@ export function FullMenu({ items }: FullMenuProps) {
             </Pressable>
             <View style={styles.scrollContainer}>
               <FlatList
-                data={items}
-                renderItem={renderMenuItem}
-                keyExtractor={item => item.id}
+                data={categorizedItems}
+                renderItem={({ item }) => renderCategory(item)}
+                keyExtractor={item => item.category}
                 showsVerticalScrollIndicator={false}
                 style={styles.list}
                 contentContainerStyle={styles.listContent}
                 scrollEnabled={true}
                 nestedScrollEnabled={true}
-                overScrollMode="auto"
-                decelerationRate="normal"
-                onStartShouldSetResponder={() => true}
-                onMoveShouldSetResponder={() => true}
               />
             </View>
           </Pressable>
@@ -114,7 +134,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.7)',
   },
   drawer: {
     borderTopLeftRadius: 20,
@@ -154,5 +174,15 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 16,
     marginBottom: 4,
+  },
+  categoryHeader: {
+    fontSize: 24,
+    fontWeight: '600',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: 'transparent',
+  },
+  categorySection: {
+    marginBottom: 16,
   },
 });
