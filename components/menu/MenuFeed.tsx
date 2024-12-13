@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -13,6 +13,8 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { fetchMenuItems } from '@/services/menuService';
 import { MenuItem } from './MenuItem';
+import { useMenuContext } from './MenuContext';
+import { MenuItem as MenuItemType } from '@/types/menu';
 
 // Get screen dimensions and adjust for mobile
 const windowDimensions = Dimensions.get('window');
@@ -34,6 +36,7 @@ interface ViewableItemsChanged {
 }
 
 export function MenuFeed() {
+  const { selectedVideoId } = useMenuContext();
   const [visibleIndex, setVisibleIndex] = useState<number>(0);
   const flatListRef = useRef<FlatList>(null);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
@@ -63,6 +66,39 @@ export function MenuFeed() {
     },
   ]);
 
+  useEffect(() => {
+    const scrollToIndex = () => {
+      if (selectedVideoId && flatListRef.current) {
+        const index = items.findIndex(item => item.id === selectedVideoId);
+        if (index !== -1 && index < items.length) {
+          console.log('Scrolling to index:', index);
+          flatListRef.current.scrollToIndex({
+            index,
+            animated: true,
+            viewPosition: 0,
+          });
+        } else {
+          console.warn('Selected video ID not found in items:', selectedVideoId);
+        }
+      }
+    };
+
+    const debounceScroll = setTimeout(scrollToIndex, 100);
+    return () => clearTimeout(debounceScroll);
+  }, [selectedVideoId, items]);
+
+  const renderItem = useCallback(
+    ({ item, index }: { item: MenuItemType; index: number }) => (
+      <MenuItem
+        item={item}
+        isVisible={index === visibleIndex}
+        hasUserInteracted={hasUserInteracted}
+        allItems={items}
+      />
+    ),
+    [visibleIndex, hasUserInteracted, items]
+  );
+
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -85,14 +121,7 @@ export function MenuFeed() {
         ref={flatListRef}
         data={items}
         keyExtractor={item => item.id}
-        renderItem={({ item, index }) => (
-          <MenuItem
-            item={item}
-            isVisible={index === visibleIndex}
-            hasUserInteracted={hasUserInteracted}
-            allItems={items}
-          />
-        )}
+        renderItem={renderItem}
         pagingEnabled
         snapToInterval={height}
         snapToAlignment="start"

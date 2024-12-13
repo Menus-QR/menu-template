@@ -35,7 +35,7 @@ export function FullMenu() {
   function renderMenuItem({ item }: { item: MenuItem }) {
     return (
       <Pressable style={styles.menuItem} onPress={() => setIsDrawerOpen(false)}>
-        <MenuCard item={item} />
+        <MenuCard item={item} setIsDrawerOpen={setIsDrawerOpen} />
       </Pressable>
     );
   }

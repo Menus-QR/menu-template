@@ -28,7 +28,7 @@ export function MenuItem({ item, isVisible, hasUserInteracted, allItems }: MenuI
   return (
     <View style={styles.container}>
       <MenuVideo url={item.video_url} isVisible={isVisible} hasUserInteracted={hasUserInteracted} />
-      <FullMenu items={allItems} />
+      <FullMenu />
       <View style={styles.detailsContainer}>
         <MenuItemDetails item={item} />
       </View>

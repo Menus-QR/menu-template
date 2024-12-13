@@ -43,7 +43,9 @@ async function fetchCategories(): Promise<Category[]> {
 export async function fetchMenuItems(): Promise<MenuItem[]> {
   console.log('Fetching menu items...');
 
-  const { data, error } = await supabase.from('platillos').select('*');
+  const { data, error } = await supabase.from('platillos').select('*').order('id', {
+    ascending: true,
+  });
 
   if (error) {
     console.error('Error fetching menu items:', error);
