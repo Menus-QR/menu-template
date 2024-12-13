@@ -1,22 +1,34 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, useColorScheme } from 'react-native';
+import { View, Text, Image, StyleSheet, useColorScheme, Pressable } from 'react-native';
 import { MenuItem } from '@/types/menu';
 import Colors from '@/constants/Colors';
+import { Link, router } from 'expo-router';
+import { useMenuContext } from './MenuContext';
 
 interface MenuCardProps {
   item: MenuItem;
+  setIsDrawerOpen: (isDrawerOpen: boolean) => void;
 }
 
-export function MenuCard({ item }: MenuCardProps) {
+export function MenuCard({ item, setIsDrawerOpen }: MenuCardProps) {
   const colorScheme = useColorScheme();
   const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
+  const { setSelectedVideoId } = useMenuContext();
 
   return (
-    <View style={styles.card}>
+    <Pressable
+      style={styles.card}
+      onPress={() => {
+        setIsDrawerOpen(false);
+        setTimeout(() => {
+          setSelectedVideoId(item.id);
+        }, 230);
+      }}
+    >
       <View style={styles.cardContainer}>
         <Image
           source={{
-            uri: 'https://via.placeholder.com/150',
+            uri: item.image_url,
           }}
           style={styles.image}
         />
@@ -32,7 +44,7 @@ export function MenuCard({ item }: MenuCardProps) {
           </Text>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
