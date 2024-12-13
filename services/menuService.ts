@@ -53,10 +53,10 @@ export async function fetchMenuItems(): Promise<MenuItem[]> {
   // Sign URLs for video items
   const itemsWithSignedUrls = await Promise.all(
     (data || []).map(async (item, index) => {
-      if (item.url.match(/\.(mp4|webm|mov)$/i)) {
+      if (item.video_url.match(/\.(mp4|webm|mov)$/i)) {
         try {
-          console.log('Getting signed URL for video:', item.url);
-          const signedUrl = await getSignedUrl(item.url);
+          console.log('Getting signed URL for video:', item.video_url);
+          const signedUrl = await getSignedUrl(item.video_url);
           console.log('Successfully signed video URL for item:', item.id);
           return { ...item, url: signedUrl };
         } catch (error) {

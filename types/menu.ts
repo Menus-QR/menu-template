@@ -7,7 +7,8 @@ export interface Category {
 
 export interface MenuItem {
   id: string;
-  url: string;
+  image_url: string;
+  video_url: string;
   name: string;
   description: string | null;
   category_id: number;

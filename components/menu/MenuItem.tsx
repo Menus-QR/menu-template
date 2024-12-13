@@ -27,7 +27,7 @@ const width = Platform.select({
 export function MenuItem({ item, isVisible, hasUserInteracted, allItems }: MenuItemProps) {
   return (
     <View style={styles.container}>
-      <MenuVideo url={item.url} isVisible={isVisible} hasUserInteracted={hasUserInteracted} />
+      <MenuVideo url={item.video_url} isVisible={isVisible} hasUserInteracted={hasUserInteracted} />
       <FullMenu items={allItems} />
       <View style={styles.detailsContainer}>
         <MenuItemDetails item={item} />

@@ -11,12 +11,15 @@ export function MenuCard({ item }: MenuCardProps) {
   const colorScheme = useColorScheme();
   const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
+  const imageUrl = item.image_url || item.video_url;
+  console.log('imageUrl', imageUrl);
+
   return (
     <View style={styles.card}>
       <View style={styles.cardContainer}>
         <Image
           source={{
-            uri: 'https://via.placeholder.com/150',
+            uri: item.image_url,
           }}
           style={styles.image}
         />
