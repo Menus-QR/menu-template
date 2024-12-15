@@ -6,6 +6,8 @@ import { DESCRIPTION_CHARACTER_LIMIT, TAB_BAR_HEIGHT } from '@/constants/layout'
 import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useMenuContext } from './MenuContext';
 
 interface MenuItemDetailsProps {
   item: MenuItem;
@@ -24,6 +26,7 @@ export function MenuItemDetails({ item }: MenuItemDetailsProps) {
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
+  const { setIsDrawerOpen } = useMenuContext();
 
   const needsTruncation = shouldTruncate(item.description ?? '');
   const displayText =
@@ -39,7 +42,12 @@ export function MenuItemDetails({ item }: MenuItemDetailsProps) {
         },
       ]}
     >
-      <Text style={[styles.title, { color: colors.menuTitle }]}>{item.name}</Text>
+      <View style={styles.titleContainer}>
+        <Text style={[styles.title, { color: colors.menuTitle }]}>{item.name}</Text>
+        <Pressable onPress={() => setIsDrawerOpen(true)} style={styles.menuButton}>
+          <Ionicons name="menu" size={28} color={colors.menuTitle} />
+        </Pressable>
+      </View>
       <Text style={[styles.price, { color: colors.menuPrice }]}>${item.price.toFixed(2)}</Text>
       <View>
         <Text style={[styles.description, { color: colors.menuText }]}>
@@ -66,10 +74,17 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 20,
   },
+  titleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 8,
+    flex: 1,
+    marginRight: 16,
   },
   price: {
     fontSize: 18,
@@ -88,5 +103,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginLeft: 8,
+  },
+  menuButton: {
+    padding: 4,
   },
 });
