@@ -5,6 +5,8 @@ interface MenuContextType {
   setSelectedVideoId: (id: string | null) => void;
   isDrawerOpen: boolean;
   setIsDrawerOpen: (isOpen: boolean) => void;
+  visibleVideoIndex: number;
+  setVisibleVideoIndex: (index: number) => void;
 }
 
 const MenuContext = createContext<MenuContextType | undefined>(undefined);
@@ -16,10 +18,18 @@ interface MenuProviderProps {
 export function MenuProvider({ children }: MenuProviderProps) {
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [visibleVideoIndex, setVisibleVideoIndex] = useState<number>(0);
 
   return (
     <MenuContext.Provider
-      value={{ selectedVideoId, setSelectedVideoId, isDrawerOpen, setIsDrawerOpen }}
+      value={{
+        selectedVideoId,
+        setSelectedVideoId,
+        isDrawerOpen,
+        setIsDrawerOpen,
+        visibleVideoIndex,
+        setVisibleVideoIndex,
+      }}
     >
       {children}
     </MenuContext.Provider>
