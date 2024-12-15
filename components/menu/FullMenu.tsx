@@ -15,11 +15,12 @@ import { MenuItem, Category, CategoryGroup } from '@/types/menu';
 import Colors from '@/constants/Colors';
 import { MenuCard } from './MenuCard';
 import { fetchCategorizedMenuItems } from '@/services/menuService';
+import { useMenuContext } from './MenuContext';
 
 export function FullMenu() {
+  const { isDrawerOpen, setIsDrawerOpen } = useMenuContext();
   const colorScheme = useColorScheme();
   const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const { data: categorizedItems = [], isLoading } = useQuery({
     queryKey: ['menuItems', 'categorized'],
@@ -53,41 +54,6 @@ export function FullMenu() {
 
   if (!categorizedItems || categorizedItems.length === 0) {
     return (
-      <>
-        <TouchableOpacity style={styles.hamburgerButton} onPress={() => setIsDrawerOpen(true)}>
-          <Ionicons name="menu" size={32} color={colors.menuText} />
-        </TouchableOpacity>
-
-        <Modal
-          visible={isDrawerOpen}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setIsDrawerOpen(false)}
-        >
-          <Pressable style={styles.modalContainer} onPress={() => setIsDrawerOpen(false)}>
-            <Pressable
-              style={[styles.drawer, { backgroundColor: Colors.semantic.primaryLight }]}
-              onPress={e => e.stopPropagation()}
-            >
-              <Pressable style={styles.headerArea} onPress={() => setIsDrawerOpen(false)}>
-                <View style={[styles.handle, { backgroundColor: colors.navigationBorder }]} />
-              </Pressable>
-              <Text style={styles.noItemsText}>
-                {isLoading ? 'Loading menu items...' : 'No menu items available'}
-              </Text>
-            </Pressable>
-          </Pressable>
-        </Modal>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <TouchableOpacity style={styles.hamburgerButton} onPress={() => setIsDrawerOpen(true)}>
-        <Ionicons name="menu" size={32} color={colors.menuText} />
-      </TouchableOpacity>
-
       <Modal
         visible={isDrawerOpen}
         transparent={true}
@@ -102,32 +68,49 @@ export function FullMenu() {
             <Pressable style={styles.headerArea} onPress={() => setIsDrawerOpen(false)}>
               <View style={[styles.handle, { backgroundColor: colors.navigationBorder }]} />
             </Pressable>
-            <View style={styles.scrollContainer}>
-              <FlatList
-                data={categorizedItems}
-                renderItem={({ item }) => renderCategory(item)}
-                keyExtractor={item => item.category.category}
-                showsVerticalScrollIndicator={false}
-                style={styles.list}
-                contentContainerStyle={styles.listContent}
-                scrollEnabled={true}
-                nestedScrollEnabled={true}
-              />
-            </View>
+            <Text style={styles.noItemsText}>
+              {isLoading ? 'Loading menu items...' : 'No menu items available'}
+            </Text>
           </Pressable>
         </Pressable>
       </Modal>
-    </>
+    );
+  }
+
+  return (
+    <Modal
+      visible={isDrawerOpen}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setIsDrawerOpen(false)}
+    >
+      <Pressable style={styles.modalContainer} onPress={() => setIsDrawerOpen(false)}>
+        <Pressable
+          style={[styles.drawer, { backgroundColor: Colors.semantic.primaryLight }]}
+          onPress={e => e.stopPropagation()}
+        >
+          <Pressable style={styles.headerArea} onPress={() => setIsDrawerOpen(false)}>
+            <View style={[styles.handle, { backgroundColor: colors.navigationBorder }]} />
+          </Pressable>
+          <View style={styles.scrollContainer}>
+            <FlatList
+              data={categorizedItems}
+              renderItem={({ item }) => renderCategory(item)}
+              keyExtractor={item => item.category.category}
+              showsVerticalScrollIndicator={false}
+              style={styles.list}
+              contentContainerStyle={styles.listContent}
+              scrollEnabled={true}
+              nestedScrollEnabled={true}
+            />
+          </View>
+        </Pressable>
+      </Pressable>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  hamburgerButton: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    zIndex: 1,
-  },
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
