@@ -13,7 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchCategorizedMenuItems } from '@/services/menuService';
 import { MenuItem } from './MenuItem';
 import { useMenuContext } from './MenuContext';
-import { CategoryGroup } from '@/types/menu';
+import { MenuItem as MenuItemType } from '@/types/menu';
 import { MenuHeader } from './MenuHeader';
 
 // Get screen dimensions and adjust for mobile

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useQuery } from '@tanstack/react-query';
@@ -10,27 +10,21 @@ interface MenuHeaderProps {
   selectedCategory?: string;
 }
 
-export function MenuHeader({
-  onCategoryPress,
-  selectedCategory: externalSelected,
-}: MenuHeaderProps) {
+export function MenuHeader({ onCategoryPress, selectedCategory }: MenuHeaderProps) {
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: fetchCategories,
   });
 
-  const [internalSelected, setInternalSelected] = useState<string>(categories[0]?.category ?? '');
-
-  // Use external value if provided, otherwise use internal state
-  const selectedCategory = externalSelected ?? internalSelected;
-
-  const handlePress = (category: string) => {
-    setInternalSelected(category);
-    onCategoryPress?.(category);
-  };
+  // Select first category when categories are loaded
+  useEffect(() => {
+    if (categories.length > 0 && !selectedCategory && onCategoryPress) {
+      onCategoryPress(categories[0].category);
+    }
+  }, [categories, selectedCategory, onCategoryPress]);
 
   if (isLoading || categories.length === 0) {
-    return null; // Or return a loading indicator if preferred
+    return null;
   }
 
   return (
@@ -44,7 +38,7 @@ export function MenuHeader({
           <TouchableOpacity
             key={category.id}
             style={styles.categoryButton}
-            onPress={() => handlePress(category.category)}
+            onPress={() => onCategoryPress?.(category.category)}
           >
             <Text style={styles.categoryText}>{category.category}</Text>
             {selectedCategory === category.category && <View style={styles.selectedUnderline} />}

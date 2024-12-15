@@ -124,7 +124,7 @@ export function FullMenu() {
 const styles = StyleSheet.create({
   hamburgerButton: {
     position: 'absolute',
-    top: 60,
+    bottom: 260,
     right: 20,
     zIndex: 1,
   },
