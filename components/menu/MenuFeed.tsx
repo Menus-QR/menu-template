@@ -36,7 +36,7 @@ interface ViewableItemsChanged {
 }
 
 export function MenuFeed() {
-  const { selectedVideoId, setVisibleVideoIndex } = useMenuContext();
+  const { selectedVideoId } = useMenuContext();
   const [visibleIndex, setVisibleIndex] = useState<number>(0);
   const flatListRef = useRef<FlatList>(null);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
@@ -94,7 +94,7 @@ export function MenuFeed() {
         const firstVisible = changed.find(item => item.isViewable);
         if (firstVisible) {
           console.log('visible item:', firstVisible);
-          setVisibleVideoIndex(firstVisible.index ?? 0);
+          setVisibleIndex(firstVisible.index ?? 0);
         }
       },
     },
@@ -123,7 +123,12 @@ export function MenuFeed() {
 
   const renderItem = useCallback(
     ({ item, index }: { item: MenuItemType; index: number }) => (
-      <MenuItem item={item} index={index} allItems={flattenedItems} />
+      <MenuItem
+        item={item}
+        isVisible={index === visibleIndex}
+        hasUserInteracted={hasUserInteracted}
+        allItems={flattenedItems}
+      />
     ),
     [visibleIndex, hasUserInteracted, flattenedItems]
   );

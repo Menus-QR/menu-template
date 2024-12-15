@@ -1,40 +1,55 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Pressable, Dimensions } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, Pressable, Dimensions, Platform } from 'react-native';
 
 interface MenuVideoProps {
   url: string;
   isVisible: boolean;
+  hasUserInteracted?: boolean;
 }
 
-export function MenuVideo({ url, isVisible }: MenuVideoProps) {
-  const video = useRef<Video>(null);
-  const [status, setStatus] = useState<any>();
+export function MenuVideo({ url, isVisible, hasUserInteracted = false }: MenuVideoProps) {
+  const video = useRef<Video | null>(null);
+  const [status, setStatus] = useState<any>(null);
   const wasVisible = useRef(isVisible);
 
-  // Handle visibility changes
+  // Handle video playback based on visibility and user interaction
   useEffect(() => {
-    const player = video.current;
-    if (!player) return;
-
-    async function handleVisibilityChange() {
-      if (!video.current) return;
+    async function handlePlayback() {
+      const player = video.current;
+      if (!player) return;
 
       try {
-        if (isVisible) {
-          await video.current.setPositionAsync(0);
-          await video.current.playAsync();
-        } else if (wasVisible.current) {
-          await video.current.pauseAsync();
+        // Video becomes visible
+        if (isVisible && hasUserInteracted) {
+          await player.setIsMutedAsync(true);
+          await player.playAsync();
         }
+        // Video becomes hidden
+        else if (wasVisible.current && !isVisible) {
+          await player.pauseAsync();
+          await player.setPositionAsync(0); // Reset to start
+        }
+
+        wasVisible.current = isVisible;
       } catch (error) {
-        console.warn('Video playback error:', error);
+        console.warn('Playback error:', error);
       }
     }
 
-    handleVisibilityChange();
-    wasVisible.current = isVisible;
-  }, [isVisible]);
+    handlePlayback();
+  }, [isVisible, hasUserInteracted]);
+
+  // Cleanup effect to pause and reset video when component unmounts
+  useEffect(() => {
+    return () => {
+      const player = video.current;
+      if (player) {
+        player.pauseAsync();
+        player.setPositionAsync(0);
+      }
+    };
+  }, []);
 
   return (
     <Pressable
@@ -58,17 +73,17 @@ export function MenuVideo({ url, isVisible }: MenuVideoProps) {
           useNativeControls={false}
           resizeMode={ResizeMode.CONTAIN}
           isMuted={true}
-          shouldPlay={isVisible}
+          shouldPlay={true}
           onPlaybackStatusUpdate={status => setStatus(() => status)}
           onLoad={() => {
             console.log('loaded');
             const player = video.current;
             if (!player) return;
 
-            if (isVisible) {
-              player.playAsync();
-            } else {
+            if (status?.isPlaying) {
               player.pauseAsync();
+            } else {
+              player.playAsync();
             }
           }}
         />

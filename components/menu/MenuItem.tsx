@@ -4,11 +4,11 @@ import { MenuItem as MenuItemType } from '@/types/menu';
 import { MenuItemDetails } from './MenuItemDetails';
 import { MenuVideo } from './MenuVideo';
 import { FullMenu } from './FullMenu';
-import { useMenuContext } from './MenuContext';
 
 interface MenuItemProps {
   item: MenuItemType;
-  index: number;
+  isVisible: boolean;
+  hasUserInteracted: boolean;
   allItems: MenuItemType[];
 }
 
@@ -24,13 +24,11 @@ const width = Platform.select({
   default: screenDimensions.width,
 });
 
-export function MenuItem({ item, index, allItems }: MenuItemProps) {
-  const { visibleVideoIndex } = useMenuContext();
-  const isVisible = index === visibleVideoIndex;
-
+export function MenuItem({ item, isVisible, hasUserInteracted, allItems }: MenuItemProps) {
   return (
     <View style={styles.container}>
-      <MenuVideo url={item.video_url} isVisible={isVisible} />
+      <MenuVideo url={item.video_url} isVisible={isVisible} hasUserInteracted={hasUserInteracted} />
+      <FullMenu />
       <View style={styles.detailsContainer}>
         <MenuItemDetails item={item} />
       </View>
