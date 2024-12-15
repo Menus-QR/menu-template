@@ -15,6 +15,7 @@ import { fetchMenuItems } from '@/services/menuService';
 import { MenuItem } from './MenuItem';
 import { useMenuContext } from './MenuContext';
 import { MenuItem as MenuItemType } from '@/types/menu';
+import { MenuHeader } from './MenuHeader';
 
 // Get screen dimensions and adjust for mobile
 const windowDimensions = Dimensions.get('window');
@@ -99,6 +100,11 @@ export function MenuFeed() {
     [visibleIndex, hasUserInteracted, items]
   );
 
+  const handleCategoryPress = useCallback((category: string) => {
+    console.log('Category pressed:', category);
+    // We'll implement the scrolling functionality later
+  }, []);
+
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -117,6 +123,7 @@ export function MenuFeed() {
 
   return (
     <View style={styles.container}>
+      <MenuHeader onCategoryPress={handleCategoryPress} />
       <FlatList
         ref={flatListRef}
         data={items}
