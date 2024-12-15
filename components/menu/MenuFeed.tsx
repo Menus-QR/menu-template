@@ -5,16 +5,15 @@ import {
   ActivityIndicator,
   View,
   Dimensions,
-  ViewStyle,
-  Text,
   Platform,
   ViewToken,
+  Text,
 } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
-import { fetchMenuItems } from '@/services/menuService';
+import { fetchCategorizedMenuItems } from '@/services/menuService';
 import { MenuItem } from './MenuItem';
 import { useMenuContext } from './MenuContext';
-import { MenuItem as MenuItemType } from '@/types/menu';
+import { CategoryGroup } from '@/types/menu';
 import { MenuHeader } from './MenuHeader';
 
 // Get screen dimensions and adjust for mobile
@@ -41,15 +40,49 @@ export function MenuFeed() {
   const [visibleIndex, setVisibleIndex] = useState<number>(0);
   const flatListRef = useRef<FlatList>(null);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
 
   const {
-    data: items = [],
+    data: categoryGroups = [],
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['menuItems'],
-    queryFn: fetchMenuItems,
+    queryKey: ['categorizedMenuItems'],
+    queryFn: fetchCategorizedMenuItems,
   });
+
+  // Flatten the categorized items for rendering
+  const flattenedItems = categoryGroups.flatMap(group => group.items);
+
+  // Create a map of category to first item index
+  const categoryIndexMap = useCallback(() => {
+    const map = new Map<string, number>();
+    let currentIndex = 0;
+
+    categoryGroups.forEach(group => {
+      map.set(group.category.category, currentIndex);
+      currentIndex += group.items.length;
+    });
+
+    return map;
+  }, [categoryGroups]);
+
+  const handleCategoryPress = useCallback(
+    (category: string) => {
+      setSelectedCategory(category);
+      const indexMap = categoryIndexMap();
+      const index = indexMap.get(category);
+
+      if (index !== undefined && flatListRef.current) {
+        flatListRef.current.scrollToIndex({
+          index,
+          animated: true,
+          viewPosition: 0,
+        });
+      }
+    },
+    [categoryIndexMap]
+  );
 
   const viewabilityConfigCallbackPairs = React.useRef([
     {
@@ -70,8 +103,8 @@ export function MenuFeed() {
   useEffect(() => {
     const scrollToIndex = () => {
       if (selectedVideoId && flatListRef.current) {
-        const index = items.findIndex(item => item.id === selectedVideoId);
-        if (index !== -1 && index < items.length) {
+        const index = flattenedItems.findIndex(item => item.id === selectedVideoId);
+        if (index !== -1 && index < flattenedItems.length) {
           console.log('Scrolling to index:', index);
           flatListRef.current.scrollToIndex({
             index,
@@ -86,7 +119,7 @@ export function MenuFeed() {
 
     const debounceScroll = setTimeout(scrollToIndex, 100);
     return () => clearTimeout(debounceScroll);
-  }, [selectedVideoId, items]);
+  }, [selectedVideoId, flattenedItems]);
 
   const renderItem = useCallback(
     ({ item, index }: { item: MenuItemType; index: number }) => (
@@ -94,16 +127,11 @@ export function MenuFeed() {
         item={item}
         isVisible={index === visibleIndex}
         hasUserInteracted={hasUserInteracted}
-        allItems={items}
+        allItems={flattenedItems}
       />
     ),
-    [visibleIndex, hasUserInteracted, items]
+    [visibleIndex, hasUserInteracted, flattenedItems]
   );
-
-  const handleCategoryPress = useCallback((category: string) => {
-    console.log('Category pressed:', category);
-    // We'll implement the scrolling functionality later
-  }, []);
 
   if (isLoading) {
     return (
@@ -123,10 +151,10 @@ export function MenuFeed() {
 
   return (
     <View style={styles.container}>
-      <MenuHeader onCategoryPress={handleCategoryPress} />
+      <MenuHeader onCategoryPress={handleCategoryPress} selectedCategory={selectedCategory} />
       <FlatList
         ref={flatListRef}
-        data={items}
+        data={flattenedItems}
         keyExtractor={item => item.id}
         renderItem={renderItem}
         pagingEnabled
@@ -144,6 +172,9 @@ export function MenuFeed() {
           index,
         })}
         onScrollBeginDrag={() => setHasUserInteracted(true)}
+        onScrollToIndexFailed={info => {
+          console.warn('Failed to scroll to index', info);
+        }}
       />
     </View>
   );
