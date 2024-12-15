@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import Colors from '@/constants/Colors';
-const CATEGORIES = ['Appetizers', 'Main Dishes', 'Tacos', 'Sandwiches', 'Desserts'];
+import { useQuery } from '@tanstack/react-query';
+import { fetchCategories } from '@/services/menuService';
+import { Category } from '@/types/menu';
 
 interface MenuHeaderProps {
   onCategoryPress?: (category: string) => void;
@@ -12,7 +14,12 @@ export function MenuHeader({
   onCategoryPress,
   selectedCategory: externalSelected,
 }: MenuHeaderProps) {
-  const [internalSelected, setInternalSelected] = useState<string>(CATEGORIES[0]);
+  const { data: categories = [], isLoading } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  });
+
+  const [internalSelected, setInternalSelected] = useState<string>(categories[0]?.category ?? '');
 
   // Use external value if provided, otherwise use internal state
   const selectedCategory = externalSelected ?? internalSelected;
@@ -22,6 +29,10 @@ export function MenuHeader({
     onCategoryPress?.(category);
   };
 
+  if (isLoading || categories.length === 0) {
+    return null; // Or return a loading indicator if preferred
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -29,14 +40,14 @@ export function MenuHeader({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {CATEGORIES.map(category => (
+        {categories.map((category: Category) => (
           <TouchableOpacity
-            key={category}
+            key={category.id}
             style={styles.categoryButton}
-            onPress={() => handlePress(category)}
+            onPress={() => handlePress(category.category)}
           >
-            <Text style={styles.categoryText}>{category}</Text>
-            {selectedCategory === category && <View style={styles.selectedUnderline} />}
+            <Text style={styles.categoryText}>{category.category}</Text>
+            {selectedCategory === category.category && <View style={styles.selectedUnderline} />}
           </TouchableOpacity>
         ))}
       </ScrollView>

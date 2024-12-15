@@ -24,7 +24,7 @@ async function getSignedUrl(path: string): Promise<string> {
   return data.signedUrl;
 }
 
-async function fetchCategories(): Promise<Category[]> {
+export async function fetchCategories(): Promise<Category[]> {
   console.log('Fetching categories...');
 
   const { data, error } = await supabase
