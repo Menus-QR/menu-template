@@ -6,31 +6,50 @@ interface MenuVideoProps {
   url: string;
   isVisible: boolean;
   hasUserInteracted?: boolean;
+  index: string;
 }
 
-export function MenuVideo({ url, isVisible, hasUserInteracted = false }: MenuVideoProps) {
+export function MenuVideo({ url, isVisible, hasUserInteracted = false, index }: MenuVideoProps) {
   const video = useRef<Video | null>(null);
   const [status, setStatus] = useState<any>(null);
   const wasVisible = useRef(isVisible);
 
   // Handle video playback based on visibility and user interaction
   useEffect(() => {
+    let isMounted = true;
+
     async function handlePlayback() {
       const player = video.current;
-      if (!player) return;
+      if (!player || !isMounted) return;
 
       try {
         // Video becomes visible
+        console.log('index:', index);
+
         if (isVisible && hasUserInteracted) {
+          console.log('Playing video at index:');
           await player.setIsMutedAsync(true);
-          await player.playAsync();
+          // Small delay to ensure proper loading
+          setTimeout(async () => {
+            if (isMounted && player) {
+              await player.playAsync();
+            }
+          }, 100);
         }
         // Video becomes hidden
         else if (wasVisible.current && !isVisible) {
+          console.log('Pausing video as we scroll away from:', index);
           await player.pauseAsync();
-          await player.setPositionAsync(0); // Reset to start
+          await player.setPositionAsync(0);
         }
 
+        // When a video becomes visible (we scroll to it)
+        else if (!wasVisible.current && isVisible) {
+          console.log('Playing video as we scroll to:', index);
+          await player.playAsync();
+        }
+
+        // Update wasVisible for the next intersection check
         wasVisible.current = isVisible;
       } catch (error) {
         console.warn('Playback error:', error);
@@ -38,6 +57,9 @@ export function MenuVideo({ url, isVisible, hasUserInteracted = false }: MenuVid
     }
 
     handlePlayback();
+    return () => {
+      isMounted = false;
+    };
   }, [isVisible, hasUserInteracted]);
 
   // Cleanup effect to pause and reset video when component unmounts
@@ -80,9 +102,13 @@ export function MenuVideo({ url, isVisible, hasUserInteracted = false }: MenuVid
             const player = video.current;
             if (!player) return;
 
-            if (status?.isPlaying) {
-              player.pauseAsync();
-            } else {
+            // if (status?.isPlaying) {
+            //   player.pauseAsync();
+            // } else {
+            //   player.playAsync();
+            // }
+
+            if (isVisible && hasUserInteracted) {
               player.playAsync();
             }
           }}

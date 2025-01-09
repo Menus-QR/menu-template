@@ -9,7 +9,6 @@ interface MenuItemProps {
   item: MenuItemType;
   isVisible: boolean;
   hasUserInteracted: boolean;
-  allItems: MenuItemType[];
 }
 
 const windowDimensions = Dimensions.get('window');
@@ -24,10 +23,15 @@ const width = Platform.select({
   default: screenDimensions.width,
 });
 
-export function MenuItem({ item, isVisible, hasUserInteracted, allItems }: MenuItemProps) {
+export function MenuItem({ item, isVisible, hasUserInteracted }: MenuItemProps) {
   return (
     <View style={styles.container}>
-      <MenuVideo url={item.video_url} isVisible={isVisible} hasUserInteracted={hasUserInteracted} />
+      <MenuVideo
+        url={item.video_url}
+        isVisible={isVisible}
+        hasUserInteracted={hasUserInteracted}
+        index={item.id}
+      />
       <FullMenu />
       <View style={styles.detailsContainer}>
         <MenuItemDetails item={item} />
