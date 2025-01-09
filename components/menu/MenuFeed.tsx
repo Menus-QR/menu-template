@@ -35,6 +35,12 @@ interface ViewableItemsChanged {
   changed: ViewToken[];
 }
 
+const viewabilityConfig = {
+  itemVisiblePercentThreshold: 60, // Item must be 60% visible
+  minimumViewTime: 200, // Must be visible for at least 200ms
+  waitForInteraction: false, // Don't wait for user interaction
+};
+
 export function MenuFeed() {
   const { selectedVideoId } = useMenuContext();
   const [visibleIndex, setVisibleIndex] = useState<number>(0);
@@ -86,15 +92,12 @@ export function MenuFeed() {
 
   const viewabilityConfigCallbackPairs = React.useRef([
     {
-      viewabilityConfig: {
-        itemVisiblePercentThreshold: 50,
-        minimumViewTime: 300,
-      },
-      onViewableItemsChanged: ({ changed }: ViewableItemsChanged) => {
-        const firstVisible = changed.find(item => item.isViewable);
-        if (firstVisible) {
-          console.log('visible item:', firstVisible);
-          setVisibleIndex(firstVisible.index ?? 0);
+      viewabilityConfig,
+      onViewableItemsChanged: ({ viewableItems }: ViewableItemsChanged) => {
+        const visibleItem = viewableItems[0];
+        if (visibleItem) {
+          console.log('Visible item index:', visibleItem.index);
+          setVisibleIndex(visibleItem.index ?? 0);
         }
       },
     },
@@ -127,7 +130,6 @@ export function MenuFeed() {
         item={item}
         isVisible={index === visibleIndex}
         hasUserInteracted={hasUserInteracted}
-        allItems={flattenedItems}
       />
     ),
     [visibleIndex, hasUserInteracted, flattenedItems]
