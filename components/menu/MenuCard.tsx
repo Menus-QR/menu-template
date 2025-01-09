@@ -20,8 +20,13 @@ export function MenuCard({ item, setIsDrawerOpen }: MenuCardProps) {
       style={styles.card}
       onPress={() => {
         setIsDrawerOpen(false);
+        // Add a small delay to let the drawer close
         setTimeout(() => {
           setSelectedVideoId(item.id);
+          // Clear the selectedVideoId after a short delay to allow scrolling
+          setTimeout(() => {
+            setSelectedVideoId(null);
+          }, 1000); // Adjust this timing if needed
         }, 230);
       }}
     >
