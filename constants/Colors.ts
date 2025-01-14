@@ -15,7 +15,7 @@ const palette = {
   },
   // Main theme colors
   theme: {
-    primary: '#A15A1C', // Main brand color
+    primary: '#2D3142', // Main brand color
     primaryLight: '#aa6b33',
     primaryDark: '#915119',
     secondary: '#2f95dc', // Current blue color
