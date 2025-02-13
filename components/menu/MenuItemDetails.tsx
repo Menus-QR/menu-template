@@ -38,7 +38,7 @@ export function MenuItemDetails({ item }: MenuItemDetailsProps) {
       style={[
         styles.overlay,
         {
-          paddingBottom: Math.max(insets.bottom + TAB_BAR_HEIGHT + 20, TAB_BAR_HEIGHT + 20),
+          paddingBottom: insets.bottom + 20,
         },
       ]}
     >

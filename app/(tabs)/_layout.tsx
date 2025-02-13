@@ -25,6 +25,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: colors.tabs.inactive,
         headerShown: false,
         tabBarStyle: {
+          display: 'none',
           backgroundColor: colors.tabs.background,
           borderTopColor: colors.tabs.border,
           borderTopLeftRadius: 0,
