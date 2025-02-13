@@ -6,8 +6,8 @@ import { fetchCategories } from '@/services/menuService';
 import { Category } from '@/types/menu';
 import { FONT_FAMILY } from '@/constants/Fonts';
 interface MenuHeaderProps {
-  onCategoryPress?: (category: string) => void;
-  selectedCategory?: string;
+  onCategoryPress?: (category: number) => void;
+  selectedCategory?: number;
 }
 
 export function MenuHeader({ onCategoryPress, selectedCategory }: MenuHeaderProps) {
@@ -19,7 +19,7 @@ export function MenuHeader({ onCategoryPress, selectedCategory }: MenuHeaderProp
   // Select first category when categories are loaded
   useEffect(() => {
     if (categories.length > 0 && !selectedCategory && onCategoryPress) {
-      onCategoryPress(categories[0].category);
+      onCategoryPress(categories[0].id);
     }
   }, [categories, selectedCategory, onCategoryPress]);
 
@@ -38,10 +38,10 @@ export function MenuHeader({ onCategoryPress, selectedCategory }: MenuHeaderProp
           <TouchableOpacity
             key={category.id}
             style={styles.categoryButton}
-            onPress={() => onCategoryPress?.(category.category)}
+            onPress={() => onCategoryPress?.(category.id)}
           >
             <Text style={styles.categoryText}>{category.category}</Text>
-            {selectedCategory === category.category && <View style={styles.selectedUnderline} />}
+            {selectedCategory === category.id && <View style={styles.selectedUnderline} />}
           </TouchableOpacity>
         ))}
       </ScrollView>

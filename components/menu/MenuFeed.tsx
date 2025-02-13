@@ -46,7 +46,7 @@ export function MenuFeed() {
   const [visibleIndex, setVisibleIndex] = useState<number>(0);
   const flatListRef = useRef<FlatList>(null);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<number>(0);
 
   const {
     data: categoryGroups = [],
@@ -62,11 +62,11 @@ export function MenuFeed() {
 
   // Create a map of category to first item index
   const categoryIndexMap = useCallback(() => {
-    const map = new Map<string, number>();
+    const map = new Map<number, number>();
     let currentIndex = 0;
 
     categoryGroups.forEach(group => {
-      map.set(group.category.category, currentIndex);
+      map.set(group.category.id, currentIndex);
       currentIndex += group.items.length;
     });
 
@@ -74,10 +74,10 @@ export function MenuFeed() {
   }, [categoryGroups]);
 
   const handleCategoryPress = useCallback(
-    (category: string) => {
-      setSelectedCategory(category);
+    (categoryId: number) => {
+      setSelectedCategory(categoryId);
       const indexMap = categoryIndexMap();
-      const index = indexMap.get(category);
+      const index = indexMap.get(categoryId);
 
       if (index !== undefined && flatListRef.current) {
         flatListRef.current.scrollToIndex({
@@ -94,9 +94,9 @@ export function MenuFeed() {
     {
       viewabilityConfig,
       onViewableItemsChanged: ({ viewableItems }: ViewableItemsChanged) => {
-        const visibleItem = viewableItems[0];
+        const visibleItem: ViewToken<MenuItemType> = viewableItems[0];
         if (visibleItem) {
-          console.log('Visible item index:', visibleItem.index);
+          setSelectedCategory(visibleItem.item.category_id);
           setVisibleIndex(visibleItem.index ?? 0);
         }
       },
