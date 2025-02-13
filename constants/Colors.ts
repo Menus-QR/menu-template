@@ -15,18 +15,18 @@ const palette = {
   },
   // Main theme colors
   theme: {
-    primary: '#2D3142', // Main brand color
-    primaryLight: '#aa6b33',
+    primary: '#FF7400', // Main brand color
+    primaryLight: '#FF7400', // Full Menu Background Color
     primaryDark: '#915119',
     secondary: '#2f95dc', // Current blue color
-    accent: '#4A90E2', // Accent color for highlights and CTAs
+    accent: '#FF7400', // Accent color for highlights and CTAs
   },
 } as const;
 
 // Semantic colors - how colors are used in the app
 const semantic = {
   primary: palette.theme.primary,
-  primaryLight: 'hsla(28,97%,58%,0.64)',
+  primaryLight: hexToRGBA(palette.theme.primaryLight, 0.8), // 70% opacity <--- adjust this to you liking.
   primaryDark: '#633400',
   secondary: palette.theme.secondary,
   accent: palette.theme.accent,
@@ -145,6 +145,13 @@ const dark = {
     border: 'transparent',
   },
 } as const;
+
+function hexToRGBA(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 export default {
   light,
