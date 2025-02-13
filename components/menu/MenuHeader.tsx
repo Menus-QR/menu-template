@@ -1,16 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useQuery } from '@tanstack/react-query';
 import { fetchCategories } from '@/services/menuService';
 import { Category } from '@/types/menu';
 import { FONT_FAMILY } from '@/constants/Fonts';
+
 interface MenuHeaderProps {
   onCategoryPress?: (category: number) => void;
   selectedCategory?: number;
 }
+const PADDING_HORIZONTAL = 16; // Define the horizontal padding
 
 export function MenuHeader({ onCategoryPress, selectedCategory }: MenuHeaderProps) {
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [itemWidths, setItemWidths] = useState<number[]>([]);
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: fetchCategories,
@@ -23,6 +27,30 @@ export function MenuHeader({ onCategoryPress, selectedCategory }: MenuHeaderProp
     }
   }, [categories, selectedCategory, onCategoryPress]);
 
+  // Scroll to the selected category
+  useEffect(() => {
+    if (selectedCategory && scrollViewRef.current && itemWidths.length === categories.length) {
+      const selectedIndex = categories.findIndex(category => category.id === selectedCategory);
+      if (selectedIndex !== -1) {
+        const scrollToX = itemWidths.slice(0, selectedIndex).reduce((acc, width) => acc + width, 0);
+        scrollViewRef.current.scrollTo({
+          x: scrollToX,
+          animated: true,
+        });
+      }
+    }
+  }, [selectedCategory, categories, itemWidths]);
+
+  const handleLayout = (index: number, event: any) => {
+    const { width } = event.nativeEvent.layout;
+    setItemWidths(prevWidths => {
+      const newWidths = [...prevWidths];
+      newWidths[index] = width + 2 * (PADDING_HORIZONTAL + 8); // Add padding to the width
+      console.log('newWidths', newWidths);
+      return newWidths;
+    });
+  };
+
   if (isLoading || categories.length === 0) {
     return null;
   }
@@ -30,17 +58,20 @@ export function MenuHeader({ onCategoryPress, selectedCategory }: MenuHeaderProp
   return (
     <View style={styles.container}>
       <ScrollView
+        ref={scrollViewRef}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {categories.map((category: Category) => (
+        {categories.map((category: Category, index) => (
           <TouchableOpacity
             key={category.id}
             style={styles.categoryButton}
             onPress={() => onCategoryPress?.(category.id)}
           >
-            <Text style={styles.categoryText}>{category.category}</Text>
+            <Text style={styles.categoryText} onLayout={event => handleLayout(index, event)}>
+              {category.category}
+            </Text>
             {selectedCategory === category.id && <View style={styles.selectedUnderline} />}
           </TouchableOpacity>
         ))}
@@ -62,10 +93,10 @@ const styles = StyleSheet.create({
     // borderBottomColor: Colors.semantic.primary,
   },
   scrollContent: {
-    paddingHorizontal: 15,
+    paddingHorizontal: PADDING_HORIZONTAL,
   },
   categoryButton: {
-    paddingHorizontal: 16,
+    paddingHorizontal: PADDING_HORIZONTAL,
     paddingVertical: 8,
     marginRight: 10,
     position: 'relative',
