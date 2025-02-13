@@ -18,12 +18,10 @@ const palette = {
     primary: '#FF7400', // Main brand color
     primaryLight: '#FF7400', // Full Menu Background Color
     primaryDark: '#915119',
-    secondary: '#2f95dc', // Current blue color
+    secondary: '#2f95dc',
     accent: '#FF7400', // Accent color for highlights and CTAs
   },
 } as const;
-
-// Semantic colors - how colors are used in the app
 const semantic = {
   primary: palette.theme.primary,
   primaryLight: hexToRGBA(palette.theme.primaryLight, 0.8), // 70% opacity <--- adjust this to you liking.

@@ -24,3 +24,20 @@ Upon creation, it will be automatically added to your ".gitignore" file.
 https://yzflfkxcaevxnwhcmluw.supabase.co/storage/v1/object/public/Instrucciones%20Proyecto//Copy%20Font%20Familiy.png
 
 8. Replace the existing font family name in the constants/Fonts.ts file with the new font family name
+
+
+### Instructions for updating the logo
+
+1. Download the logo you want to use in PNG format
+2. Go to Supabase Storage and click on the Global Bucket
+3. Upload the logo to the Bucket
+4. IMPORTANT: Make sure the name of the file is "logo.png"
+
+### Instructions for updating the colors
+
+1. Go to constants/Colors.ts file
+2. Update the colors you want to use
+3. Primary is the main color of the app
+4. PrimaryLight is the color for the full menu background
+5. Accent is the color for the highlights and CTAs
+6. If you need to further adjust the full menu background color you can adjust the opacity.
