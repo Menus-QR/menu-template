@@ -16,6 +16,7 @@ import Colors from '@/constants/Colors';
 import { MenuCard } from './MenuCard';
 import { fetchCategorizedMenuItems } from '@/services/menuService';
 import { useMenuContext } from './MenuContext';
+import { FONT_FAMILY } from '@/constants/Fonts';
 
 export function FullMenu() {
   const { isDrawerOpen, setIsDrawerOpen } = useMenuContext();
@@ -161,6 +162,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     backgroundColor: 'transparent',
+    fontFamily: FONT_FAMILY.regular,
   },
   categorySection: {
     marginBottom: 16,

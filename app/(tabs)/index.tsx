@@ -4,6 +4,7 @@ import { View } from '@/components/Themed';
 import { MenuFeed } from '@/components/menu/MenuFeed';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
+import { FONT_FAMILY } from '@/constants/Fonts';
 
 export default function TabOneScreen() {
   const colorScheme = useColorScheme() ?? 'light';

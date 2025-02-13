@@ -4,7 +4,7 @@ import Colors from '@/constants/Colors';
 import { useQuery } from '@tanstack/react-query';
 import { fetchCategories } from '@/services/menuService';
 import { Category } from '@/types/menu';
-
+import { FONT_FAMILY } from '@/constants/Fonts';
 interface MenuHeaderProps {
   onCategoryPress?: (category: string) => void;
   selectedCategory?: string;
@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
   categoryText: {
     color: '#FFFFFF',
     fontSize: 14,
+    fontFamily: FONT_FAMILY.regular,
     fontWeight: '800',
   },
   selectedUnderline: {

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, useColorScheme, Pressable } from 'react-native';
 import { MenuItem } from '@/types/menu';
 import Colors from '@/constants/Colors';
-import { Link, router } from 'expo-router';
+import { FONT_FAMILY } from '@/constants/Fonts';
 import { useMenuContext } from './MenuContext';
 
 interface MenuCardProps {
@@ -92,12 +92,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     flex: 1,
     marginRight: 8,
+    fontFamily: FONT_FAMILY.regular,
   },
   price: {
     fontSize: 16,
     fontWeight: '600',
+    fontFamily: FONT_FAMILY.regular,
   },
   description: {
     fontSize: 14,
+    fontFamily: FONT_FAMILY.regular,
   },
 });

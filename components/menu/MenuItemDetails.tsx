@@ -8,6 +8,7 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useMenuContext } from './MenuContext';
+import { FONT_FAMILY } from '@/constants/Fonts';
 
 interface MenuItemDetailsProps {
   item: MenuItem;
@@ -83,16 +84,19 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    fontFamily: FONT_FAMILY.regular,
     flex: 1,
     marginRight: 16,
   },
   price: {
     fontSize: 18,
     fontWeight: 'bold',
+    fontFamily: FONT_FAMILY.regular,
     marginBottom: 8,
   },
   description: {
     fontSize: 16,
+    fontFamily: FONT_FAMILY.regular,
     marginBottom: 8,
   },
   toggleButton: {
