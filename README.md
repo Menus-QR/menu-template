@@ -1,15 +1,30 @@
-> Why do I have a folder named ".vercel" in my project?
-The ".vercel" folder is created when you link a directory to a Vercel project.
+## Menu Template
 
-> What does the "project.json" file contain?
-The "project.json" file contains:
-- The ID of the Vercel project that you linked ("projectId")
-- The ID of the user or team your Vercel project is owned by ("orgId")
+This is a template that can be used to create a menu for a restaurant.
 
-> Should I commit the ".vercel" folder?
-No, you should not share the ".vercel" folder with anyone.
-Upon creation, it will be automatically added to your ".gitignore" file.
+Fork This Template to start a new restaurant menu
 
+For each new restaurant menu you create, you will need to update the following:
+
+- Constants/Colors.ts
+- Constants/Fonts.ts
+- Components/menu/Logo.tsx
+
+The App uses a Supabase database to store the menu items, storage for the logo, images and videos.
+
+For each new restaurant menu that you create, you will need to duplicate the existing Supabase database and buckets and update the .ENV variables.
+
+Set Relevant .ENV variables in vercel so the app deploys correctly.
+
+SUPABASE_PASSWORD
+EXPO_PUBLIC_SUPABASE_ANON_KEY
+EXPO_PUBLIC_SUPABASE_URL
+
+### Tech stack
+
+The app is built with React Native and Expo.
+Deployed on [Vercel](https://vercel.com/)
+Supabase for database and storage [Supabase](https://supabase.com/)
 
 ### Instructions for updating the font
 
@@ -24,7 +39,6 @@ Upon creation, it will be automatically added to your ".gitignore" file.
 https://yzflfkxcaevxnwhcmluw.supabase.co/storage/v1/object/public/Instrucciones%20Proyecto//Copy%20Font%20Familiy.png
 
 8. Replace the existing font family name in the constants/Fonts.ts file with the new font family name
-
 
 ### Instructions for updating the logo
 
