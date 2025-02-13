@@ -5,11 +5,13 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchCategories } from '@/services/menuService';
 import { Category } from '@/types/menu';
 import { FONT_FAMILY } from '@/constants/Fonts';
+import { Logo } from './Logo';
 
 interface MenuHeaderProps {
   onCategoryPress?: (category: number) => void;
   selectedCategory?: number;
 }
+
 const PADDING_HORIZONTAL = 16; // Define the horizontal padding
 
 export function MenuHeader({ onCategoryPress, selectedCategory }: MenuHeaderProps) {
@@ -46,7 +48,6 @@ export function MenuHeader({ onCategoryPress, selectedCategory }: MenuHeaderProp
     setItemWidths(prevWidths => {
       const newWidths = [...prevWidths];
       newWidths[index] = width + 2 * (PADDING_HORIZONTAL + 8); // Add padding to the width
-      console.log('newWidths', newWidths);
       return newWidths;
     });
   };
@@ -57,6 +58,9 @@ export function MenuHeader({ onCategoryPress, selectedCategory }: MenuHeaderProp
 
   return (
     <View style={styles.container}>
+      <View style={styles.logoContainer}>
+        <Logo />
+      </View>
       <ScrollView
         ref={scrollViewRef}
         horizontal
@@ -89,11 +93,19 @@ const styles = StyleSheet.create({
     zIndex: 10,
     backgroundColor: 'rgba(0, 0, 0, 0.05)',
     paddingVertical: 10,
-    // borderBottomWidth: 2,
-    // borderBottomColor: Colors.semantic.primary,
+  },
+  logoContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20, // Ensure the logo is above other elements
+    alignItems: 'center',
+    paddingVertical: 10,
   },
   scrollContent: {
     paddingHorizontal: PADDING_HORIZONTAL,
+    marginTop: 60, // Adjust this value to ensure the categories are below the logo
   },
   categoryButton: {
     paddingHorizontal: PADDING_HORIZONTAL,
@@ -111,7 +123,6 @@ const styles = StyleSheet.create({
   selectedUnderline: {
     position: 'absolute',
     bottom: 0,
-    // left: '25%',
     height: 4,
     borderRadius: 15,
     width: '85%',

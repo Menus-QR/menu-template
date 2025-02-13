@@ -15,7 +15,6 @@ import { MenuItem } from './MenuItem';
 import { useMenuContext } from './MenuContext';
 import { MenuItem as MenuItemType } from '@/types/menu';
 import { MenuHeader } from './MenuHeader';
-
 // Get screen dimensions and adjust for mobile
 const windowDimensions = Dimensions.get('window');
 const screenDimensions = Dimensions.get('screen');
