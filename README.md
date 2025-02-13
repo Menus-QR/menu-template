@@ -16,9 +16,11 @@ For each new restaurant menu that you create, you will need to duplicate the exi
 
 Set Relevant .ENV variables in vercel so the app deploys correctly.
 
+```
 SUPABASE_PASSWORD
 EXPO_PUBLIC_SUPABASE_ANON_KEY
 EXPO_PUBLIC_SUPABASE_URL
+```
 
 ### Tech stack
 
@@ -32,13 +34,13 @@ Supabase for database and storage [Supabase](https://supabase.com/)
 2. Search for the font you want to use
 3. Click on the font you want to use
 4. Click on the "Get embed code" button
-5. Copy the font link 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap'
+5. Copy the font link ( 1 )
 6. Replace the existing font link in the constants/Fonts.ts file with the new font link
-7. Copy the font family name 'Inter'
+7. Copy the font family name ( 2 )
 
-https://yzflfkxcaevxnwhcmluw.supabase.co/storage/v1/object/public/Instrucciones%20Proyecto//Copy%20Font%20Familiy.png
+   ![alt text](https://yzflfkxcaevxnwhcmluw.supabase.co/storage/v1/object/public/Instrucciones%20Proyecto//Copy%20Font%20Familiy.png)
 
-8. Replace the existing font family name in the constants/Fonts.ts file with the new font family name
+8. Replace the existing font family name in the constants/Fonts.ts file with the new font family name 'Inter'
 
 ### Instructions for updating the logo
 
