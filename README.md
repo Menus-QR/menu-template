@@ -21,8 +21,6 @@ For each new restaurant menu that you create, you will need to duplicate the exi
 3. [Deploy a New Project on Vercel](https://docs.google.com/document/d/1CEOOc96H0LPIXzumDsTFxk_sHIFSOvlVZSvNn5-jcbg/edit?tab=t.0)
 4. [Personalize Menu to Restaurant](https://docs.google.com/document/d/1t4jLWV32xb6DcSVpT5PtUE1FYmCstyYZu5F8zf-JoTQ/edit?tab=t.0)
 
-
-
 ### Instructions for updating the font
 
 1. Go to https://fonts.google.com/
@@ -53,10 +51,10 @@ For each new restaurant menu that you create, you will need to duplicate the exi
 5. Accent is the color for the highlights and CTAs
 6. If you need to further adjust the full menu background color you can adjust the opacity.
 
-
 ### Tech stack
 
 The app is built with React Native and Expo.
 Deployed on [Vercel](https://vercel.com/)
 Supabase for database and storage [Supabase](https://supabase.com/)
 
+This Repo uses Yarn as the package manager
