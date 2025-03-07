@@ -9,7 +9,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { MenuProvider } from '@/components/menu/MenuContext';
 import { injectGoogleFonts } from '@/constants/Fonts';
 import { View, Platform, StyleSheet, ViewStyle } from 'react-native';
-import { Analytics } from '@vercel/analytics/react';
+import { inject } from '@vercel/analytics';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -80,28 +80,21 @@ export default function RootLayout() {
   useEffect(() => {
     injectGoogleFonts();
     SplashScreen.hideAsync();
+    inject();
   }, []);
 
   // If viewport is wider than breakpoint and not in iframe, show the wrapper
   if (windowWidth > BREAKPOINT && !isInIframe) {
-    return (
-      <>
-        <WebWrapper />
-        <Analytics />
-      </>
-    );
+    return <WebWrapper />;
   }
 
   // Normal app render (narrow viewport or inside iframe)
   return (
-    <>
-      <MenuProvider>
-        <QueryClientProvider client={queryClient}>
-          <RootLayoutNav />
-        </QueryClientProvider>
-      </MenuProvider>
-      <Analytics />
-    </>
+    <MenuProvider>
+      <QueryClientProvider client={queryClient}>
+        <RootLayoutNav />
+      </QueryClientProvider>
+    </MenuProvider>
   );
 }
 
