@@ -14,19 +14,14 @@ The App uses a Supabase database to store the menu items, storage for the logo, 
 
 For each new restaurant menu that you create, you will need to duplicate the existing Supabase database and buckets and update the .ENV variables.
 
-Set Relevant .ENV variables in vercel so the app deploys correctly.
+## Creating a New Project
 
-```
-SUPABASE_PASSWORD
-EXPO_PUBLIC_SUPABASE_ANON_KEY
-EXPO_PUBLIC_SUPABASE_URL
-```
+1. [Create a New Project on Github](https://docs.google.com/document/d/17WER7XPVddQVzrMAYDHF1I9l0x4ach7hZVH687tVbYM/edit?tab=t.0)
+2. [Create a New Database on Supabase](https://docs.google.com/document/d/10cgYNal4U-1wSvl0HjqPr-3leBVaRuWKWPereDf93-M/edit?tab=t.0)
+3. [Deploy a New Project on Vercel](https://docs.google.com/document/d/1CEOOc96H0LPIXzumDsTFxk_sHIFSOvlVZSvNn5-jcbg/edit?tab=t.0)
+4. [Personalize Menu to Restaurant](https://docs.google.com/document/d/1t4jLWV32xb6DcSVpT5PtUE1FYmCstyYZu5F8zf-JoTQ/edit?tab=t.0)
 
-### Tech stack
 
-The app is built with React Native and Expo.
-Deployed on [Vercel](https://vercel.com/)
-Supabase for database and storage [Supabase](https://supabase.com/)
 
 ### Instructions for updating the font
 
@@ -57,3 +52,11 @@ Supabase for database and storage [Supabase](https://supabase.com/)
 4. PrimaryLight is the color for the full menu background
 5. Accent is the color for the highlights and CTAs
 6. If you need to further adjust the full menu background color you can adjust the opacity.
+
+
+### Tech stack
+
+The app is built with React Native and Expo.
+Deployed on [Vercel](https://vercel.com/)
+Supabase for database and storage [Supabase](https://supabase.com/)
+
