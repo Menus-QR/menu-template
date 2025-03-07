@@ -9,6 +9,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { MenuProvider } from '@/components/menu/MenuContext';
 import { injectGoogleFonts } from '@/constants/Fonts';
 import { View, Platform, StyleSheet, ViewStyle } from 'react-native';
+import { Analytics } from '@vercel/analytics/react';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -83,16 +84,24 @@ export default function RootLayout() {
 
   // If viewport is wider than breakpoint and not in iframe, show the wrapper
   if (windowWidth > BREAKPOINT && !isInIframe) {
-    return <WebWrapper />;
+    return (
+      <>
+        <WebWrapper />
+        <Analytics />
+      </>
+    );
   }
 
   // Normal app render (narrow viewport or inside iframe)
   return (
-    <MenuProvider>
-      <QueryClientProvider client={queryClient}>
-        <RootLayoutNav />
-      </QueryClientProvider>
-    </MenuProvider>
+    <>
+      <MenuProvider>
+        <QueryClientProvider client={queryClient}>
+          <RootLayoutNav />
+        </QueryClientProvider>
+      </MenuProvider>
+      <Analytics />
+    </>
   );
 }
 
