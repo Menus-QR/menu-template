@@ -143,6 +143,7 @@ export function MenuFeed() {
   }
 
   if (error) {
+    console.error('Error loading menu items:', error);
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.errorText}>Failed to load menu items</Text>
